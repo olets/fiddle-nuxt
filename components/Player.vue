@@ -9,8 +9,14 @@
 <script>
 import abcjs from "abcjs";
 import "abcjs/abcjs-audio.css";
+import { sleep } from "~~/utils/sleep.js";
 
 export default {
+  data() {
+    return {
+      duration: 1000,
+    };
+  },
   props: {
     abc: {
       type: String,
@@ -29,7 +35,13 @@ export default {
         this.synth.init({ visualObj: this.visualObj }).then(() => {
           this.synthController.setTune(this.visualObj, true).then(() => {
             this.synthController.play();
-          })
+
+            sleep(this.duration).then(() => {
+              this.synthController.pause();
+              this.synthController.setProgress();
+              this.playing = false;
+            });
+          });
         });
       } else {
         console.log("Audio is not supported on this browser");
