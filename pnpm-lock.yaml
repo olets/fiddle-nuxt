@@ -1,9 +1,11 @@
 lockfileVersion: 5.3
 
 specifiers:
+  abcjs: ^6.0.2
   nuxt3: latest
 
 devDependencies:
+  abcjs: 6.0.2
   nuxt3: 3.0.0-27470397.9ebea90
 
 packages:
@@ -988,6 +990,10 @@ packages:
 
   /abbrev/1.1.1:
     resolution: {integrity: sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==}
+    dev: true
+
+  /abcjs/6.0.2:
+    resolution: {integrity: sha512-kLKqP1PoxWuq5U634swDnthSIVkhldSgPMJVGszdQAvTOca3gycu87WtlNvnpRrX9e4QXDrqHO9hmcY7vr/UGw==}
     dev: true
 
   /acorn/8.7.0:
@@ -5072,7 +5078,7 @@ packages:
   /wide-align/1.1.5:
     resolution: {integrity: sha512-eDMORYaPNZ4sQIuuYPDHdQvf4gyCF9rEEV/yPxGfwPkRodwEgiMUUXTx/dex+Me0wxx53S+NgUHaP7y3MGlDmg==}
     dependencies:
-      string-width: 1.0.2
+      string-width: 4.2.3
     dev: true
 
   /wrap-ansi/7.0.0:
