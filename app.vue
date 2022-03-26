@@ -8,7 +8,7 @@ const { data } = await useFetch(
 <template>
   <Player
     :name="data.name"
-    :setting="data.settings[0]"
+    :setting="data.settings[Math.floor(Math.random() * data.settings.length)]"
     :id="data.id"
   ></Player>
 </template>
