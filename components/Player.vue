@@ -1,5 +1,6 @@
 <template>
   <button @click="play" :disabled="playing">Play</button>
+  <button @click="increment" :disabled="playing">Increment</button>
 
   <div id="synth-controller-outlet"></div>
 
@@ -15,6 +16,7 @@ export default {
   data() {
     return {
       duration: 1000,
+      durationIncrements: [1000, 2000, 3000, 4000, 5000],
       playing: false,
     };
   },
@@ -25,6 +27,9 @@ export default {
     },
   },
   methods: {
+    increment() {
+      this.duration += this.durationIncrements.shift();
+    },
     play() {
       if (abcjs.synth.supportsAudio()) {
         this.playing = true;
