@@ -2,7 +2,12 @@
   <button @click="play" :disabled="playing">Play</button>
   <button @click="increment" :disabled="playing">Increment</button>
 
-  <div id="synth-controller-outlet"></div>
+  <div class="hidden" id="synth-controller-outlet"></div>
+
+  <div class="h-5 bg-slate-900 relative">
+    <div class="left-0 w-full h-full absolute bg-slate-200 border-white" :style="`width: calc(100% * ${duration} / 16000)`"></div>
+    <div :class="`${playing ? 'animate-slide' : ''} w-full h-full absolute bg-green-400 -translate-x-full`"></div>
+  </div>
 
   <textarea readonly v-model="abc"></textarea>
 </template>
