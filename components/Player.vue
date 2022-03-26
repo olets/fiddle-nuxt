@@ -1,5 +1,5 @@
 <template>
-  <button @click="play">click</button>
+  <button @click="play" :disabled="playing">Play</button>
 
   <div id="synth-controller-outlet"></div>
 
@@ -15,6 +15,7 @@ export default {
   data() {
     return {
       duration: 1000,
+      playing: false,
     };
   },
   props: {
@@ -26,6 +27,8 @@ export default {
   methods: {
     play() {
       if (abcjs.synth.supportsAudio()) {
+        this.playing = true;
+
         this.synthController.load("#synth-controller-outlet", null, {
           displayProgress: true,
         });
