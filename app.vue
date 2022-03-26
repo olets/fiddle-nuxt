@@ -22,7 +22,7 @@ const { data } = await useAsyncData(
 
 <script>
 import Player from "@/components/Player.vue";
-import { abcFromData } from "~~/utils/abc-from-data";
+import { abcFromData } from "~/utils/abc-from-data";
 
 export default {
   components: { Player },

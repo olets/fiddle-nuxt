@@ -10,7 +10,7 @@
 <script>
 import abcjs from "abcjs";
 import "abcjs/abcjs-audio.css";
-import { sleep } from "~~/utils/sleep.js";
+import { sleep } from "~/utils/sleep.js";
 
 export default {
   data() {
