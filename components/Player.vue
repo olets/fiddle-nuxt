@@ -27,7 +27,7 @@
 
   <div>
     <button @click="increment" :disabled="playing" :class="`${playing ? 'text-slate-500 cursor-not-allowed' : 'hover:bg-link hover:text-white'} border border-link rounded-full p-2 shadow transition-colors`">
-      Add {{ durationReadable }}
+      {{ skipButtonText }}
     </button>
   </div>
 
@@ -98,9 +98,15 @@ export default {
     },
   },
   computed: {
-    durationReadable() {
-      const sec = this.duration / 1000
-      return `${sec} ${sec > 1 ? "seconds" : "second"}`
+    skipButtonText() {
+      let text = "Skip"
+
+      if (this.durationIncrements.length) {
+        const sec = this.durationIncrements[0] / 1000
+        text += ` (+${sec}s)`
+      }
+
+      return text
     },
     synth() {
       return new abcjs.synth.CreateSynth();
