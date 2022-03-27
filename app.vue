@@ -6,7 +6,7 @@
     >{{ data.name }} ({{ data.id }})</a>
   </h1>
 
-  <Player
+  <Game
     :abc="abc"
     :answer="answer"
   />
@@ -30,11 +30,11 @@ const { data } = await useAsyncData(
 </script>
 
 <script>
-import Player from "~~/components/PlayerComponent.vue";
+import Game from "~~/components/GameComponent.vue";
 import { abcFromData } from "~/utils/abc-from-data";
 
 export default {
-  components: { Player },
+  components: { Game },
   computed: {
     abc() {
       return abcFromData(this.setting, this.data.name);
