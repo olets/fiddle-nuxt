@@ -73,7 +73,6 @@ export default {
     },
     play() {
       if (abcjs.synth.supportsAudio()) {
-        this.playing = true;
 
         this.synthController.load("#synth-controller-outlet", null, {
           displayProgress: true,
@@ -84,6 +83,7 @@ export default {
         this.synth.init({ visualObj: this.visualObj }).then(() => {
           this.synthController.setTune(this.visualObj, true).then(() => {
             this.synthController.play();
+            this.playing = true;
 
             sleep(this.duration).then(() => {
               this.synthController.pause();
