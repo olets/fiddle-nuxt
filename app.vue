@@ -14,9 +14,12 @@
 
 <script setup>
 const needle = Math.ceil(Math.random() * 99 + 1);
+
+// eslint-disable-next-line no-undef
 const { data } = await useAsyncData(
   "myRandomKey",
   () =>
+    // eslint-disable-next-line no-undef
     $fetch(`https://thesession.org/tunes/${needle}?format=json`).catch((e) => {
       console.log(e);
     }),
