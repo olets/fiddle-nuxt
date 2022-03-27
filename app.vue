@@ -1,6 +1,6 @@
 <template>
   <h1>
-    <a :href="setting.url">{{ data.name }} ({{ data.id }})</a>
+    <a class="underline decoration-link hover:text-link transition-colors" :href="setting.url">{{ data.name }} ({{ data.id }})</a>
   </h1>
 
   <Player :abc="abc"></Player>
