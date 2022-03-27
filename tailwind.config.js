@@ -24,6 +24,9 @@ module.exports = {
           DEFAULT: colors.blue['500'],
         },
       },
+      gridTemplateColumns: {
+        16: 'repeat(16, minmax(0, 1fr))',
+      },
       keyframes: {
         slide: {
           "0%": { transform: "translateX(-100%)" },

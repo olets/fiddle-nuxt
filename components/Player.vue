@@ -2,7 +2,9 @@
   <button
     @click="play"
     :disabled="playing"
-    :class="`${playing ? 'text-slate-500 cursor-not-allowed' : 'hover:text-link'} aspect-square w-16 overflow-hidden rounded-full transition-colors`"
+    :class="`${
+      playing ? 'text-slate-500 cursor-not-allowed' : 'hover:text-link'
+    } aspect-square w-16 overflow-hidden rounded-full transition-colors`"
   >
     <!-- 
       Sittipong Haus, CC0, via Wikimedia Commons
@@ -26,16 +28,24 @@
   </button>
 
   <div>
-    <button @click="increment" :disabled="playing" :class="`${playing ? 'text-slate-500 cursor-not-allowed' : 'hover:bg-link hover:text-white'} border border-link rounded-full p-2 shadow transition-colors`">
+    <button
+      @click="increment"
+      :disabled="playing"
+      :class="`${
+        playing
+          ? 'text-slate-500 cursor-not-allowed'
+          : 'hover:bg-link hover:text-white'
+      } border border-link rounded-full p-2 shadow transition-colors`"
+    >
       {{ skipButtonText }}
     </button>
   </div>
 
   <div class="hidden" id="synth-controller-outlet"></div>
 
-  <div class="h-5 bg-slate-900 relative">
+  <div class="border border-black h-5 relative">
     <div
-      class="left-0 w-full h-full absolute bg-slate-200 border-white"
+      class="left-0 w-full h-full absolute bg-slate-900 border-white"
       :style="`width: calc(100% * ${duration} / 16000)`"
     ></div>
     <div
@@ -43,6 +53,24 @@
         playing ? 'animate-slide' : ''
       } w-full h-full absolute bg-green-400 -translate-x-full`"
     ></div>
+
+    <div class="left-0 w-full h-full absolute grid gap-px grid-cols-16">
+      <div
+        class="border border-transparent border-r-slate-400 col-span-1"
+      ></div>
+      <div
+        class="border border-transparent border-r-slate-400 col-span-1"
+      ></div>
+      <div
+        class="border border-transparent border-r-slate-400 col-span-2"
+      ></div>
+      <div
+        class="border border-transparent border-r-slate-400 col-span-3"
+      ></div>
+      <div
+        class="border border-transparent border-r-slate-400 col-span-4"
+      ></div>
+    </div>
   </div>
 
   <!-- <pre>{{ abc }}</pre> -->
@@ -73,7 +101,6 @@ export default {
     },
     play() {
       if (abcjs.synth.supportsAudio()) {
-
         this.synthController.load("#synth-controller-outlet", null, {
           displayProgress: true,
         });
@@ -99,14 +126,14 @@ export default {
   },
   computed: {
     skipButtonText() {
-      let text = "Skip"
+      let text = "Skip";
 
       if (this.durationIncrements.length) {
-        const sec = this.durationIncrements[0] / 1000
-        text += ` (+${sec}s)`
+        const sec = this.durationIncrements[0] / 1000;
+        text += ` (+${sec}s)`;
       }
 
-      return text
+      return text;
     },
     synth() {
       return new abcjs.synth.CreateSynth();
