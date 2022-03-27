@@ -38,7 +38,7 @@
 
   <div>
     <button
-      :disabled="canIncrement"
+      :disabled="playing || finished"
       :class="`${
         playing
           ? 'text-slate-500 cursor-not-allowed'
@@ -64,12 +64,13 @@
         class="border rounded"
         type="text"
         value=""
+        :disabled="playing || finished"
       >
     </label>
 
     <button
       class="border border-link disabled:opacity-50 px-4 py-2 rounded-lg transition-opacity"
-      :disabled="canIncrement"
+      :disabled="playing || finished"
       type="submit"
     >
       Guess
@@ -131,13 +132,10 @@ export default {
       durationIncrements: [1000, 2000, 3000, 4000, 5000],
       guesses: [],
       playing: false,
-      solved: false,
+      finished: false,
     };
   },
   computed: {
-    canIncrement() {
-      return !this.playing; //&& !this.solved && this.durationIncrements.length
-    },
     skipButtonText() {
       let text = "Skip";
 
@@ -158,14 +156,24 @@ export default {
       return abcjs.renderAbc("*", this.abc)[0];
     },
   },
-  created() {
-    console.log(this.canIncrement);
+  watch: {
+    finished() {
+      alert("done");
+    },
+    durationIncrements(_oldValue, newValue) {
+      if (!newValue.length) {
+        this.finished = true;
+      }
+    }
   },
   methods: {
     submitGuess() {
       const { value } = this.$refs.guessInput;
       this.guesses = [...this.guesses, value];
-      this.solved = value.toLowerCase() === this.answer.toLowerCase();
+      this.$refs.guessInput.value = null;
+      const correct = value.toLowerCase() === this.answer.toLowerCase();
+      alert(correct ? "correct" : "incorrect");
+      this.finished = correct;
     },
     increment() {
       this.duration += this.durationIncrements.shift();
