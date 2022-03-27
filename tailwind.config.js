@@ -1,4 +1,4 @@
-const colors = require('tailwindcss/colors');
+const colors = require("tailwindcss/colors");
 const plugin = require("tailwindcss/plugin");
 
 module.exports = {
@@ -21,11 +21,11 @@ module.exports = {
       colors: {
         link: {
           ...colors.blue,
-          DEFAULT: colors.blue['500'],
+          DEFAULT: colors.blue["500"],
         },
       },
       gridTemplateColumns: {
-        16: 'repeat(16, minmax(0, 1fr))',
+        16: "repeat(16, minmax(0, 1fr))",
       },
       keyframes: {
         slide: {

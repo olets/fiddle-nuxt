@@ -3,11 +3,13 @@
     <a
       class="underline decoration-link hover:text-link transition-colors"
       :href="setting.url"
-      >{{ data.name }} ({{ data.id }})</a
-    >
+    >{{ data.name }} ({{ data.id }})</a>
   </h1>
 
-  <Player :abc="abc" :answer="answer"></Player>
+  <Player
+    :abc="abc"
+    :answer="answer"
+  />
 </template>
 
 <script setup>

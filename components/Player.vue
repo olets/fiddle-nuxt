@@ -1,16 +1,19 @@
 <template>
   <ul>
-    <li v-for="guess in guesses" :key="guess">
+    <li
+      v-for="guess in guesses"
+      :key="guess"
+    >
       {{ guess }}
     </li>
   </ul>
   
   <button
-    @click="play"
     :disabled="playing"
     :class="`${
       playing ? 'text-slate-500 cursor-not-allowed' : 'hover:text-link'
     } aspect-square w-16 overflow-hidden rounded-full transition-colors`"
+    @click="play"
   >
     <!-- 
       Sittipong Haus, CC0, via Wikimedia Commons
@@ -35,35 +38,38 @@
 
   <div>
     <button
-      @click="increment"
-      :disabled="playing"
+      :disabled="canIncrement"
       :class="`${
         playing
           ? 'text-slate-500 cursor-not-allowed'
           : 'hover:bg-link hover:text-white'
       } border border-link rounded-full p-2 shadow transition-colors`"
+      @click="increment"
     >
       {{ skipButtonText }}
     </button>
   </div>
 
-  <div class="hidden" id="synth-controller-outlet"></div>
+  <div
+    id="synth-controller-outlet"
+    class="hidden"
+  />
 
   <form @submit.prevent="guess">
     <label>
       Title
       <input
-        class="border rounded"
         id="guessInput"
         ref="guessInput"
+        class="border rounded"
         type="text"
         value=""
-      />
+      >
     </label>
 
     <button
       class="border border-link disabled:opacity-50 px-4 py-2 rounded-lg transition-opacity"
-      :disabled="playing || !durationIncrements.length"
+      :disabled="canIncrement"
       type="submit"
     >
       Guess
@@ -74,29 +80,29 @@
     <div
       class="left-0 w-full h-full absolute bg-slate-900 border-white"
       :style="`width: calc(100% * ${duration} / 16000)`"
-    ></div>
+    />
     <div
       :class="`${
         playing ? 'animate-slide' : ''
       } w-full h-full absolute bg-green-400 -translate-x-full`"
-    ></div>
+    />
 
     <div class="left-0 w-full h-full absolute grid gap-px grid-cols-16">
       <div
         class="border border-transparent border-r-slate-400 col-span-1"
-      ></div>
+      />
       <div
         class="border border-transparent border-r-slate-400 col-span-1"
-      ></div>
+      />
       <div
         class="border border-transparent border-r-slate-400 col-span-2"
-      ></div>
+      />
       <div
         class="border border-transparent border-r-slate-400 col-span-3"
-      ></div>
+      />
       <div
         class="border border-transparent border-r-slate-400 col-span-4"
-      ></div>
+      />
     </div>
   </div>
 
@@ -109,14 +115,6 @@ import "abcjs/abcjs-audio.css";
 import { sleep } from "~/utils/sleep.js";
 
 export default {
-  data() {
-    return {
-      duration: 1000,
-      durationIncrements: [1000, 2000, 3000, 4000, 5000],
-      guesses: [],
-      playing: false,
-    };
-  },
   props: {
     abc: {
       type: String,
@@ -127,12 +125,47 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      duration: 1000,
+      durationIncrements: [1000, 2000, 3000, 4000, 5000],
+      guesses: [],
+      playing: false,
+      solved: false,
+    };
+  },
+  computed: {
+    canIncrement() {
+      return !this.playing; //&& !this.solved && this.durationIncrements.length
+    },
+    skipButtonText() {
+      let text = "Skip";
+
+      if (this.durationIncrements.length) {
+        const sec = this.durationIncrements[0] / 1000;
+        text += ` (+${sec}s)`;
+      }
+
+      return text;
+    },
+    synth() {
+      return new abcjs.synth.CreateSynth();
+    },
+    synthController() {
+      return new abcjs.synth.SynthController();
+    },
+    visualObj() {
+      return abcjs.renderAbc("*", this.abc)[0];
+    },
+  },
+  created() {
+    console.log(this.canIncrement);
+  },
   methods: {
     guess() {
       const { value } = this.$refs.guessInput;
       this.guesses = [...this.guesses, value];
-      const correct = value.toLowerCase() === this.answer.toLowerCase();
-      alert(correct ? "yes!" : "no!");
+      this.solved = value.toLowerCase() === this.answer.toLowerCase();
     },
     increment() {
       this.duration += this.durationIncrements.shift();
@@ -161,27 +194,6 @@ export default {
         console.log("Audio is not supported on this browser");
       }
     },
-  },
-  computed: {
-    skipButtonText() {
-      let text = "Skip";
-
-      if (this.durationIncrements.length) {
-        const sec = this.durationIncrements[0] / 1000;
-        text += ` (+${sec}s)`;
-      }
-
-      return text;
-    },
-    synth() {
-      return new abcjs.synth.CreateSynth();
-    },
-    synthController() {
-      return new abcjs.synth.SynthController();
-    },
-    visualObj() {
-      return abcjs.renderAbc("*", this.abc)[0];
-    },
-  },
+  }
 };
 </script>
