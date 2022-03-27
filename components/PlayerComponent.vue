@@ -55,7 +55,7 @@
     class="hidden"
   />
 
-  <form @submit.prevent="guess">
+  <form @submit.prevent="submitGuess">
     <label>
       Title
       <input
@@ -162,7 +162,7 @@ export default {
     console.log(this.canIncrement);
   },
   methods: {
-    guess() {
+    submitGuess() {
       const { value } = this.$refs.guessInput;
       this.guesses = [...this.guesses, value];
       this.solved = value.toLowerCase() === this.answer.toLowerCase();
