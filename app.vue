@@ -1,9 +1,13 @@
 <template>
   <h1>
-    <a class="underline decoration-link hover:text-link transition-colors" :href="setting.url">{{ data.name }} ({{ data.id }})</a>
+    <a
+      class="underline decoration-link hover:text-link transition-colors"
+      :href="setting.url"
+      >{{ data.name }} ({{ data.id }})</a
+    >
   </h1>
 
-  <Player :abc="abc"></Player>
+  <Player :abc="abc" :answer="answer"></Player>
 </template>
 
 <script setup>
@@ -29,6 +33,9 @@ export default {
   computed: {
     abc() {
       return abcFromData(this.setting, this.data.name);
+    },
+    answer() {
+      return this.data.name;
     },
     setting() {
       const index = Math.floor(Math.random() * this.data.settings.length);

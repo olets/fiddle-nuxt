@@ -1,4 +1,10 @@
 <template>
+  <ul>
+    <li v-for="guess in guesses" :key="guess">
+      {{ guess }}
+    </li>
+  </ul>
+  
   <button
     @click="play"
     :disabled="playing"
@@ -43,6 +49,27 @@
 
   <div class="hidden" id="synth-controller-outlet"></div>
 
+  <form @submit.prevent="guess">
+    <label>
+      Title
+      <input
+        class="border rounded"
+        id="guessInput"
+        ref="guessInput"
+        type="text"
+        value=""
+      />
+    </label>
+
+    <button
+      class="border border-link disabled:opacity-50 px-4 py-2 rounded-lg transition-opacity"
+      :disabled="playing || !durationIncrements.length"
+      type="submit"
+    >
+      Guess
+    </button>
+  </form>
+
   <div class="border border-black h-5 relative">
     <div
       class="left-0 w-full h-full absolute bg-slate-900 border-white"
@@ -86,6 +113,7 @@ export default {
     return {
       duration: 1000,
       durationIncrements: [1000, 2000, 3000, 4000, 5000],
+      guesses: [],
       playing: false,
     };
   },
@@ -94,8 +122,18 @@ export default {
       type: String,
       required: true,
     },
+    answer: {
+      type: String,
+      required: true,
+    },
   },
   methods: {
+    guess() {
+      const { value } = this.$refs.guessInput;
+      this.guesses = [...this.guesses, value];
+      const correct = value.toLowerCase() === this.answer.toLowerCase();
+      alert(correct ? "yes!" : "no!");
+    },
     increment() {
       this.duration += this.durationIncrements.shift();
     },
