@@ -30,7 +30,7 @@ const { data } = await useAsyncData(
 </script>
 
 <script>
-import Player from "@/components/Player.vue";
+import Player from "~~/components/PlayerComponent.vue";
 import { abcFromData } from "~/utils/abc-from-data";
 
 export default {
