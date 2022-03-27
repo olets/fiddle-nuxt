@@ -1,4 +1,5 @@
-const plugin = require('tailwindcss/plugin')
+const colors = require('tailwindcss/colors');
+const plugin = require("tailwindcss/plugin");
 
 module.exports = {
   content: [
@@ -11,23 +12,33 @@ module.exports = {
   theme: {
     extend: {
       animation: {
-        'slide': 'slide 16s linear',
+        slide: "slide 16s linear",
+      },
+      borderWidth: {
+        12: "12px",
+        20: "20px",
+      },
+      colors: {
+        link: {
+          ...colors.blue,
+          DEFAULT: colors.blue['500'],
+        },
       },
       keyframes: {
         slide: {
-          '0%': { transform: 'translateX(-100%)' },
-          '100%': { transform: 'translateX(0)' },
-        }
-      }
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(0)" },
+        },
+      },
     },
   },
   plugins: [
-    plugin(function({ addUtilities }) {
+    plugin(function ({ addUtilities }) {
       addUtilities({
-        '.animation-pause': {
-          animationPlayState: 'paused'
+        ".animation-pause": {
+          animationPlayState: "paused",
         },
-      })
-    })
+      });
+    }),
   ],
 };
