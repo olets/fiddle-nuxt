@@ -1,14 +1,10 @@
 <template>
-  <h1>
-    <a
-      class="underline decoration-link hover:text-link transition-colors"
-      :href="setting.url"
-    >{{ data.name }} ({{ data.id }})</a>
-  </h1>
+  <h1>Fiddle</h1>
 
   <Game
     :abc="abc"
-    :answer="answer"
+    :title="data.name"
+    :url="setting.url"
   />
 </template>
 
@@ -19,7 +15,7 @@ const needle = Math.ceil(Math.random() * 99 + 1);
 const { data } = await useAsyncData(
   "myRandomKey",
   () =>
-    // eslint-disable-next-line no-undef
+  // eslint-disable-next-line no-undef
     $fetch(`https://thesession.org/tunes/${needle}?format=json`).catch((e) => {
       console.log(e);
     }),
@@ -38,9 +34,6 @@ export default {
   computed: {
     abc() {
       return abcFromData(this.setting, this.data.name);
-    },
-    answer() {
-      return this.data.name;
     },
     setting() {
       const index = Math.floor(Math.random() * this.data.settings.length);

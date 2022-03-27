@@ -7,13 +7,13 @@
       {{ guess }}
     </li>
   </ul>
-  
+
   <button
     :disabled="playing"
     :class="`${
       playing ? 'text-slate-500 cursor-not-allowed' : 'hover:text-link'
     } aspect-square w-16 overflow-hidden rounded-full transition-colors`"
-    @click="play"
+    @click="activateAndPlay"
   >
     <!-- 
       Sittipong Haus, CC0, via Wikimedia Commons
@@ -50,11 +50,6 @@
     </button>
   </div>
 
-  <div
-    id="synth-controller-outlet"
-    class="hidden"
-  />
-
   <form @submit.prevent="submitGuess">
     <label>
       Title
@@ -77,7 +72,7 @@
     </button>
   </form>
 
-  <div class="border border-black h-5 relative">
+  <div :class="`${finished ? 'hidden' : ''} border border-black h-5 relative`">
     <div
       class="left-0 w-full h-full absolute bg-slate-900 border-white"
       :style="`width: calc(100% * ${duration} / 16000)`"
@@ -89,25 +84,24 @@
     />
 
     <div class="left-0 w-full h-full absolute grid gap-px grid-cols-16">
-      <div
-        class="border border-transparent border-r-slate-400 col-span-1"
-      />
-      <div
-        class="border border-transparent border-r-slate-400 col-span-1"
-      />
-      <div
-        class="border border-transparent border-r-slate-400 col-span-2"
-      />
-      <div
-        class="border border-transparent border-r-slate-400 col-span-3"
-      />
-      <div
-        class="border border-transparent border-r-slate-400 col-span-4"
-      />
+      <div class="border border-transparent border-r-slate-400 col-span-1" />
+      <div class="border border-transparent border-r-slate-400 col-span-1" />
+      <div class="border border-transparent border-r-slate-400 col-span-2" />
+      <div class="border border-transparent border-r-slate-400 col-span-3" />
+      <div class="border border-transparent border-r-slate-400 col-span-4" />
     </div>
   </div>
 
-  <!-- <pre>{{ abc }}</pre> -->
+  <div :class="`${finished ? '' : 'hidden'}`">
+    <div ref="player" />
+
+    <a
+      class="underline decoration-link hover:text-link transition-colors"
+      :href="url"
+    >{{ title }}</a>
+
+    <div ref="notation" />
+  </div>
 </template>
 
 <script>
@@ -121,18 +115,26 @@ export default {
       type: String,
       required: true,
     },
-    answer: {
+    title: {
+      type: String,
+      required: true,
+    },
+    url: {
       type: String,
       required: true,
     },
   },
   data() {
     return {
+      activated: false,
       duration: 1000,
       durationIncrements: [1000, 2000, 3000, 4000, 5000],
+      finished: false,
       guesses: [],
       playing: false,
-      finished: false,
+      synth: null,
+      synthController: null,
+      visualObj: null,
     };
   },
   computed: {
@@ -146,62 +148,79 @@ export default {
 
       return text;
     },
-    synth() {
-      return new abcjs.synth.CreateSynth();
-    },
-    synthController() {
-      return new abcjs.synth.SynthController();
-    },
-    visualObj() {
-      return abcjs.renderAbc("*", this.abc)[0];
-    },
   },
   watch: {
     finished() {
-      alert("done");
+      this.duration = null;
+      this.activateAndPlay();
     },
-    durationIncrements(_oldValue, newValue) {
-      if (!newValue.length) {
+    guesses() {
+      if (!this.durationIncrements.length) {
         this.finished = true;
       }
-    }
+    },
+  },
+  mounted() {
+    this.synth = new abcjs.synth.CreateSynth();
+
+    this.synthController = new abcjs.synth.SynthController();
+    this.visualObj = abcjs.renderAbc("*", this.abc)[0];
+
+    this.synthController.load(this.$refs.player, null, {
+      displayRestart: true,
+      displayPlay: true,
+      displayProgress: true,
+      displayClock: false
+    });
+
+    abcjs.renderAbc(this.$refs.notation, this.abc, { responsive: "resize" });
   },
   methods: {
     submitGuess() {
       const { value } = this.$refs.guessInput;
+      const correct = value.toLowerCase() === this.title.toLowerCase();
+
       this.guesses = [...this.guesses, value];
+
       this.$refs.guessInput.value = null;
-      const correct = value.toLowerCase() === this.answer.toLowerCase();
-      alert(correct ? "correct" : "incorrect");
+      
       this.finished = correct;
     },
     increment() {
       this.duration += this.durationIncrements.shift();
+      this.guesses = [...this.guesses, "Skipped"];
     },
-    play() {
-      if (abcjs.synth.supportsAudio()) {
-        this.synthController.load("#synth-controller-outlet", null, {
-          displayProgress: true,
-        });
+    activateAndPlay() {
+      const play = () => {
+        this.synthController.setTune(this.visualObj, true).then(() => {
+          this.synthController.play();
+          this.playing = true;
 
-        this.synthController.disable(true);
-
-        this.synth.init({ visualObj: this.visualObj }).then(() => {
-          this.synthController.setTune(this.visualObj, true).then(() => {
-            this.synthController.play();
-            this.playing = true;
-
+          if (this.duration) {
             sleep(this.duration).then(() => {
               this.synthController.pause();
               this.synthController.setProgress();
               this.playing = false;
             });
-          });
+          }
+        });
+      };
+
+      if (abcjs.synth.supportsAudio()) {
+        if (this.activated) {
+          play();
+          return;
+        }
+
+        this.activated = true;
+
+        this.synth.init({ visualObj: this.visualObj }).then(() => {
+          play();
         });
       } else {
         console.log("Audio is not supported on this browser");
       }
     },
-  }
+  },
 };
 </script>
