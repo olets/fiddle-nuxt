@@ -1,10 +1,10 @@
 <template>
   <ul>
     <li
-      v-for="guess in guesses"
-      :key="guess"
+      v-for="value in guesses"
+      :key="value"
     >
-      {{ guess }}
+      {{ value }}
     </li>
   </ul>
 
@@ -44,28 +44,26 @@
           ? 'text-slate-500 cursor-not-allowed'
           : 'hover:bg-link hover:text-white'
       } border border-link rounded-full p-2 shadow transition-colors`"
-      @click="increment"
+      @click="skip"
     >
       {{ skipButtonText }}
     </button>
   </div>
 
-  <form @submit.prevent="submitGuess">
+  <form @submit.prevent="makeGuess">
     <label>
       Title
       <input
-        id="guessInput"
-        ref="guessInput"
+        v-model="guess"
         class="border rounded"
         type="text"
-        value=""
         :disabled="playing || finished"
       >
     </label>
 
     <button
       class="border border-link disabled:opacity-50 px-4 py-2 rounded-lg transition-opacity"
-      :disabled="playing || finished"
+      :disabled="playing || finished || !guess"
       type="submit"
     >
       Guess
@@ -130,6 +128,7 @@ export default {
       duration: 1000,
       durationIncrements: [1000, 2000, 3000, 4000, 5000],
       finished: false,
+      guess: "",
       guesses: [],
       playing: false,
       synth: null,
@@ -170,25 +169,28 @@ export default {
       displayRestart: true,
       displayPlay: true,
       displayProgress: true,
-      displayClock: false
+      displayClock: false,
     });
 
     abcjs.renderAbc(this.$refs.notation, this.abc, { responsive: "resize" });
   },
   methods: {
-    submitGuess() {
-      const { value } = this.$refs.guessInput;
-      const correct = value.toLowerCase() === this.title.toLowerCase();
-
-      this.guesses = [...this.guesses, value];
-
-      this.$refs.guessInput.value = null;
-      
-      this.finished = correct;
-    },
-    increment() {
-      this.duration += this.durationIncrements.shift();
+    skip() {
       this.guesses = [...this.guesses, "Skipped"];
+      this.duration += this.durationIncrements.shift();
+    },
+    makeGuess() {
+      const correct = this.guess.toLowerCase() === this.title.toLowerCase();
+
+      this.guesses = [...this.guesses, this.guess];
+
+      this.guess = null;
+
+      this.finished = correct;
+
+      if (!correct) {
+        this.duration += this.durationIncrements.shift();
+      }
     },
     activateAndPlay() {
       const play = () => {
