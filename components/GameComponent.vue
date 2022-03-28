@@ -216,9 +216,11 @@ export default {
 
         this.activated = true;
 
-        this.synth.init({ visualObj: this.visualObj }).then(() => {
-          play();
-        });
+        this.synth
+          .init({ visualObj: this.visualObj, millisecondsPerMeasure: 800 })
+          .then(() => {
+            play();
+          });
       } else {
         console.log("Audio is not supported on this browser");
       }
