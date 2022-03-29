@@ -1,13 +1,28 @@
 <template>
-  <ul>
-    <li v-for="value in guesses" :key="value">
-      {{ value }}
+  <ul class="space-y-2">
+    <li
+      v-for="g in guesses"
+      :key="g"
+      class="p-2 border"
+    >
+      {{ g }}
+    </li>
+
+    <li
+      v-for="d in durationIncrementsRemaining"
+      :key="d"
+      class="p-2 border select-none"
+    >
+      &nbsp;
     </li>
   </ul>
 
-  <label>
+  <label class="block">
     Hard?
-    <input v-model="hard" type="checkbox" />
+    <input
+      v-model="hard"
+      type="checkbox"
+    >
   </label>
 
   <button
@@ -60,7 +75,7 @@
         class="border rounded"
         type="text"
         :disabled="playing || finished"
-      />
+      >
     </label>
 
     <button
@@ -104,8 +119,7 @@
     <a
       class="underline decoration-link hover:text-link transition-colors"
       :href="url"
-      >{{ title }}</a
-    >
+    >{{ title }}</a>
 
     <div ref="notation" />
   </div>
