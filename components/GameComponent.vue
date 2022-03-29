@@ -1,12 +1,14 @@
 <template>
   <ul>
-    <li
-      v-for="value in guesses"
-      :key="value"
-    >
+    <li v-for="value in guesses" :key="value">
       {{ value }}
     </li>
   </ul>
+
+  <label>
+    Hard?
+    <input v-model="hard" type="checkbox" />
+  </label>
 
   <button
     :disabled="playing"
@@ -58,7 +60,7 @@
         class="border rounded"
         type="text"
         :disabled="playing || finished"
-      >
+      />
     </label>
 
     <button
@@ -75,18 +77,23 @@
       class="left-0 w-full h-full absolute bg-slate-900 border-white"
       :style="`width: calc(100% * ${duration} / ${fullDuration})`"
     />
+
     <div
       :class="`${
         playing ? 'animate-slide' : ''
       } w-full h-full absolute bg-green-400 -translate-x-full`"
+      :style="`animation-duration: ${fullDuration * durationFactor}s`"
     />
 
-    <div class="left-0 w-full h-full absolute grid gap-px" style="grid-template-columns: repeat(${fullDuration}, minmax(0, 1fr)">
+    <div
+      class="left-0 w-full h-full absolute grid gap-px"
+      :style="`grid-template-columns: repeat(${fullDuration}, minmax(0, 1fr)`"
+    >
       <div
-        v-for="durationIncrement in durationIncrements"
-        :key="durationIncrement"
+        v-for="d in durationIncrements"
+        :key="d"
         class="border border-transparent border-r-slate-400"
-        :style="`grid-column: span ${durationIncrement} / span ${durationIncrement}`"
+        :style="`grid-column: span ${d} / span ${d}`"
       />
     </div>
   </div>
@@ -97,7 +104,8 @@
     <a
       class="underline decoration-link hover:text-link transition-colors"
       :href="url"
-    >{{ title }}</a>
+      >{{ title }}</a
+    >
 
     <div ref="notation" />
   </div>
@@ -107,8 +115,6 @@
 import abcjs from "abcjs";
 import "abcjs/abcjs-audio.css";
 import { sleep } from "~/utils/sleep.js";
-
-const DURATION_INCREMENT_UNIT = 600;
 
 export default {
   props: {
@@ -128,17 +134,13 @@ export default {
   data() {
     return {
       activated: false,
-      duration: DURATION_INCREMENT_UNIT,
-      durationIncrements: [
-        DURATION_INCREMENT_UNIT,
-        DURATION_INCREMENT_UNIT * 2,
-        DURATION_INCREMENT_UNIT * 3,
-        DURATION_INCREMENT_UNIT * 4,
-        DURATION_INCREMENT_UNIT * 5,
-      ],
+      duration: 0,
+      durationIncrements: [1, 1, 2, 3, 4, 5],
+      durationIncrementsRemaining: [1, 1, 2, 3, 4, 5],
       finished: false,
       guess: "",
       guesses: [],
+      hard: false,
       playing: false,
       synth: null,
       synthController: null,
@@ -146,14 +148,17 @@ export default {
     };
   },
   computed: {
+    durationFactor() {
+      return this.hard ? 0.65 : 1.3;
+    },
     fullDuration() {
       return this.durationIncrements.reduce((a, b) => a + b);
     },
     skipButtonText() {
       let text = "Skip";
 
-      if (this.durationIncrements.length) {
-        const sec = this.durationIncrements[0] / 1000;
+      if (this.durationIncrementsRemaining.length) {
+        const sec = this.durationIncrementsRemaining[0];
         text += ` (+${sec}s)`;
       }
 
@@ -167,15 +172,16 @@ export default {
       this.activateAndPlay();
     },
     guesses() {
-      if (!this.durationIncrements.length) {
+      if (!this.durationIncrementsRemaining.length) {
         this.finished = true;
       }
     },
   },
+  created() {
+    this.duration = this.durationIncrementsRemaining.shift();
+  },
   mounted() {
     this.synth = new abcjs.synth.CreateSynth();
-    console.log(this.durationIncrements);
-    console.log(this.fullDuration);
 
     this.synthController = new abcjs.synth.SynthController();
     this.visualObj = abcjs.renderAbc("*", this.abc)[0];
@@ -190,7 +196,7 @@ export default {
   methods: {
     skip() {
       this.guesses = [...this.guesses, "Skipped"];
-      this.duration += this.durationIncrements.shift();
+      this.duration += this.durationIncrementsRemaining.shift();
     },
     makeGuess() {
       const correct = this.guess.toLowerCase() === this.title.toLowerCase();
@@ -202,7 +208,7 @@ export default {
       this.finished = correct;
 
       if (!correct) {
-        this.duration += this.durationIncrements.shift();
+        this.duration += this.durationIncrementsRemaining.shift();
       }
     },
     activateAndPlay() {
@@ -212,11 +218,11 @@ export default {
           this.playing = true;
 
           if (this.duration) {
-            sleep(this.duration).then(() => {
-              // this.synthController.pause();
-              // this.synthController.setProgress();
-              // this.playing = false;
-              this.synth.stop();
+            // duration is in seconds, sleep needs milliseconds
+            sleep(this.duration * this.durationFactor * 1000).then(() => {
+              this.synthController.pause();
+              this.synthController.setProgress();
+              this.playing = false;
             });
           }
         });
@@ -231,7 +237,10 @@ export default {
         this.activated = true;
 
         this.synth
-          .init({ visualObj: this.visualObj, millisecondsPerMeasure: 800 })
+          .init({
+            visualObj: this.visualObj,
+            millisecondsPerMeasure: 800,
+          })
           .then(() => {
             play();
           });
