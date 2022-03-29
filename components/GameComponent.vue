@@ -74,7 +74,7 @@
 
   <div :class="`${finished ? 'hidden' : ''} border border-black h-5 relative`">
     <div
-      class="left-0 w-full h-full absolute bg-slate-900 border-white"
+      class="left-0 h-full absolute bg-slate-900 border-white"
       :style="`width: calc(100% * ${duration} / ${fullDuration})`"
     />
 
