@@ -151,6 +151,7 @@ export default {
   watch: {
     finished() {
       this.duration = null;
+      abcjs.renderAbc(this.$refs.notation, this.abc, { responsive: "resize" });
       this.activateAndPlay();
     },
     guesses() {
@@ -171,8 +172,6 @@ export default {
       displayProgress: true,
       displayClock: false,
     });
-
-    abcjs.renderAbc(this.$refs.notation, this.abc, { responsive: "resize" });
   },
   methods: {
     skip() {
