@@ -1,5 +1,5 @@
-const colors = require("tailwindcss/colors");
 const plugin = require("tailwindcss/plugin");
+const colors = require("tailwindcss/colors");
 
 module.exports = {
   content: [
@@ -13,6 +13,9 @@ module.exports = {
     extend: {
       animation: {
         slide: "slide 16s linear",
+      },
+      borderColor: {
+        DEFAULT: colors.slate["500"],
       },
       borderWidth: {
         12: "12px",
@@ -34,8 +37,8 @@ module.exports = {
         },
       },
       minHeight: ({ theme }) => ({
-        ...theme("spacing")
-      })
+        ...theme("spacing"),
+      }),
     },
   },
   plugins: [

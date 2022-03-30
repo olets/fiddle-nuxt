@@ -1,11 +1,15 @@
 <template>
-  <h1>Fiddle</h1>
+  <div class="flex flex-col min-h-screen">
+    <Header />
 
-  <Game
-    :abc="abc"
-    :title="data.name"
-    :url="setting.url"
-  />
+    <main class="flex flex-col grow">
+      <Game
+        :abc="abc"
+        :title="data.name"
+        :url="setting.url"
+      />
+    </main>
+  </div>
 </template>
 
 <script setup>
@@ -27,10 +31,11 @@ const { data } = await useAsyncData(
 
 <script>
 import Game from "~~/components/GameComponent.vue";
+import Header from "~~/components/HeaderComponent.vue";
 import { abcFromData } from "~/utils/abc-from-data";
 
 export default {
-  components: { Game },
+  components: { Game, Header },
   computed: {
     abc() {
       return abcFromData(this.setting, this.data.name);

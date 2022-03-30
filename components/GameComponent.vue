@@ -1,127 +1,161 @@
 <template>
-  <ul class="space-y-2">
-    <li
-      v-for="g in guesses"
-      :key="g"
-      class="p-2 border"
-    >
-      {{ g }}
-    </li>
+  <div class="flex flex-col grow">
+    <div class="grow max-w-xl mx-auto w-full">
+      <!-- Answer -->
+      <div :class="`${finished ? '' : 'hidden'} mb-8`">
+        <a
+          class="underline decoration-link hover:text-link transition-colors"
+          :href="url"
+        >{{ title }}</a>
 
-    <li
-      v-for="d in durationIncrementsRemaining"
-      :key="d"
-      class="p-2 border select-none"
-    >
-      &nbsp;
-    </li>
-  </ul>
+        <div ref="notation" />
+      </div>
 
-  <label class="block">
-    Hard?
-    <input
-      v-model="hard"
-      type="checkbox"
-    >
-  </label>
+      <!-- Guesses -->
+      <ul :class="`${finished ? 'hidden' : ''} space-y-2`">
+        <li
+          v-for="g in guesses"
+          :key="g"
+          class="p-2 border"
+        >
+          {{ g }}
+        </li>
 
-  <button
-    :disabled="playing"
-    :class="`${
-      playing ? 'text-slate-500 cursor-not-allowed' : 'hover:text-link'
-    } aspect-square w-16 overflow-hidden rounded-full transition-colors`"
-    @click="activateAndPlay"
-  >
-    <!-- 
-      Sittipong Haus, CC0, via Wikimedia Commons
-      https://commons.wikimedia.org/wiki/File:Play_-_The_Noun_Project.svg
-    -->
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      xmlns:xlink="http://www.w3.org/1999/xlink"
-      version="1.1"
-      x="0px"
-      y="0px"
-      viewBox="0 0 90 90"
-      enable-background="new 0 0 90 90"
-      xml:space="preserve"
-      fill="currentColor"
-    >
-      <path
-        d="M45,6.421c21.273,0,38.579,17.306,38.579,38.579S66.273,83.578,45,83.578c-21.273,0-38.579-17.306-38.579-38.579  S23.727,6.421,45,6.421 M45,0C20.148,0,0,20.146,0,44.999s20.148,44.999,45,44.999c24.852,0,45-20.146,45-44.999S69.852,0,45,0L45,0  z M65.5,44.999l-31.5-18v36L65.5,44.999z"
-      />
-    </svg>
-  </button>
-
-  <div>
-    <button
-      :disabled="playing || finished"
-      :class="`${
-        playing
-          ? 'text-slate-500 cursor-not-allowed'
-          : 'hover:bg-link hover:text-white'
-      } border border-link rounded-full p-2 shadow transition-colors`"
-      @click="skip"
-    >
-      {{ skipButtonText }}
-    </button>
-  </div>
-
-  <form @submit.prevent="makeGuess">
-    <label>
-      Title
-      <input
-        v-model="guess"
-        class="border rounded"
-        type="text"
-        :disabled="playing || finished"
-      >
-    </label>
-
-    <button
-      class="border border-link disabled:opacity-50 px-4 py-2 rounded-lg transition-opacity"
-      :disabled="playing || finished || !guess"
-      type="submit"
-    >
-      Guess
-    </button>
-  </form>
-
-  <div :class="`${finished ? 'hidden' : ''} border border-black h-5 relative`">
-    <div
-      class="left-0 h-full absolute bg-slate-900 border-white"
-      :style="`width: calc(100% * ${duration} / ${fullDuration})`"
-    />
-
-    <div
-      :class="`${
-        playing ? 'animate-slide' : ''
-      } w-full h-full absolute bg-green-400 -translate-x-full`"
-      :style="`animation-duration: ${fullDuration * durationFactor}s`"
-    />
-
-    <div
-      class="left-0 w-full h-full absolute grid gap-px"
-      :style="`grid-template-columns: repeat(${fullDuration}, minmax(0, 1fr)`"
-    >
-      <div
-        v-for="d in durationIncrementsDisplayed"
-        :key="d"
-        class="border border-transparent border-r-slate-400"
-        :style="`grid-column: span ${d} / span ${d}`"
-      />
+        <li
+          v-for="d in durationIncrementsRemaining"
+          :key="d"
+          class="p-2 border select-none"
+        >
+          &nbsp;
+        </li>
+      </ul>
     </div>
-  </div>
 
-  <div :class="`${finished ? '' : 'hidden'}`">
-    <div ref="player" />
+    <div class="py-2">
+      <!-- Progress bar -->
+      <div class="border-y">
+        <!-- Short for while guessing -->
+        <div
+          :class="`${
+            finished ? 'hidden' : ''
+          } h-3 max-w-xl mx-auto overflow-hidden relative`"
+        >
+          <!-- Unlocked duration -->
+          <div
+            class="left-0 h-full absolute bg-slate-900"
+            :style="`width: calc(100% * ${duration} / ${fullDuration})`"
+          />
 
-    <a
-      class="underline decoration-link hover:text-link transition-colors"
-      :href="url"
-    >{{ title }}</a>
+          <!-- Play progress -->
+          <div
+            :class="`${
+              playing ? 'animate-slide' : ''
+            } w-full h-full absolute bg-green-400 -translate-x-full`"
+            :style="`animation-duration: ${fullDuration * durationFactor}s`"
+          />
 
-    <div ref="notation" />
+          <!-- Duration increments -->
+          <div
+            class="absolute grid h-full left-0 w-full"
+            :style="`grid-template-columns: repeat(${fullDuration}, minmax(0, 1fr)`"
+          >
+            <div
+              v-for="d in durationIncrementsDisplayed"
+              :key="d"
+              class="border-r"
+              :style="`grid-column: span ${d} / span ${d}`"
+            />
+          </div>
+        </div>
+
+        <!-- Full for when finish -->
+        <div
+          ref="player"
+          :class="`${finished ? '' : 'hidden'} max-w-xl mx-auto`"
+        />
+      </div>
+
+      <!-- Guessing interface -->
+      <div class="max-w-xl mx-auto">
+        <!-- Hard option -->
+        <label class="block">
+          Hard?
+          <input
+            v-model="hard"
+            type="checkbox"
+          >
+        </label>
+
+        <!-- Play button -->
+        <div class="text-center">
+          <button
+            :disabled="playing"
+            :class="`${
+              playing ? 'text-slate-500 cursor-not-allowed' : 'hover:text-link'
+            } aspect-square overflow-hidden rounded-full transition-colors w-14`"
+            @click="activateAndPlay"
+          >
+            <!-- 
+              Sittipong Haus, CC0, via Wikimedia Commons
+              https://commons.wikimedia.org/wiki/File:Play_-_The_Noun_Project.svg
+            -->
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink"
+              version="1.1"
+              x="0px"
+              y="0px"
+              viewBox="0 0 90 90"
+              enable-background="new 0 0 90 90"
+              xml:space="preserve"
+              fill="currentColor"
+            >
+              <path
+                d="M45,6.421c21.273,0,38.579,17.306,38.579,38.579S66.273,83.578,45,83.578c-21.273,0-38.579-17.306-38.579-38.579  S23.727,6.421,45,6.421 M45,0C20.148,0,0,20.146,0,44.999s20.148,44.999,45,44.999c24.852,0,45-20.146,45-44.999S69.852,0,45,0L45,0  z M65.5,44.999l-31.5-18v36L65.5,44.999z"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Guess -->
+        <form
+          :class="`${finished ? 'hidden' : ''}`"
+          @submit.prevent="makeGuess"
+        >
+          <label>
+            <div class="sr-only">Title</div>
+
+            <input
+              v-model="guess"
+              class="border px-4 py-3 w-full"
+              placeholder="Title"
+              type="text"
+              :disabled="playing || finished"
+            >
+          </label>
+
+          <div class="flex justify-between mt-2">
+            <!-- Skip button -->
+            <button
+              :disabled="playing || finished"
+              class="bg-slate-500 disabled:cursor-not-allowed font-bold px-4 py-2 text-sm text-white tracking-widest transition-opacity"
+              @click="skip"
+            >
+              <span class="uppercase">Skip</span> {{ skipButtonText }}
+            </button>
+
+            <!-- Guess button -->
+            <button
+              class="bg-green-500 disabled:cursor-not-allowed font-bold px-4 py-2 text-sm text-white tracking-widest transition-opacity uppercase"
+              :disabled="playing || finished || !guess"
+              type="submit"
+            >
+              Guess
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -175,7 +209,7 @@ export default {
         .filter((el) => el);
     },
     skipButtonText() {
-      let text = "Skip";
+      let text = "";
 
       if (this.durationIncrementsRemaining.length) {
         const sec = this.durationIncrementsRemaining[0];
