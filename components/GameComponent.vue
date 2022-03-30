@@ -131,10 +131,7 @@
 import abcjs from "abcjs";
 import "abcjs/abcjs-audio.css";
 import { sleep } from "~/utils/sleep.js";
-
-const sum = (arr) => {
-  return arr.reduce((a, b) => a + b);
-};
+import { sum } from "~/utils/sum.js";
 
 export default {
   props: {
