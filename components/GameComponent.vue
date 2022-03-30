@@ -105,9 +105,7 @@
       :style="`grid-template-columns: repeat(${fullDuration}, minmax(0, 1fr)`"
     >
       <div
-        v-for="d in durationIncrementsUnlocked.concat(
-          durationIncrementsRemaining
-        )"
+        v-for="d in durationIncrementsDisplayed"
         :key="d"
         class="border border-transparent border-r-slate-400"
         :style="`grid-column: span ${d} / span ${d}`"
@@ -170,6 +168,11 @@ export default {
     },
     durationFactor() {
       return this.hard ? 0.65 : 1.3;
+    },
+    durationIncrementsDisplayed() {
+      return this.durationIncrementsUnlocked
+        .concat(this.durationIncrementsRemaining)
+        .filter((el) => el);
     },
     skipButtonText() {
       let text = "Skip";
