@@ -105,7 +105,9 @@
       :style="`grid-template-columns: repeat(${fullDuration}, minmax(0, 1fr)`"
     >
       <div
-        v-for="d in durationIncrements"
+        v-for="d in durationIncrementsUnlocked.concat(
+          durationIncrementsRemaining
+        )"
         :key="d"
         class="border border-transparent border-r-slate-400"
         :style="`grid-column: span ${d} / span ${d}`"
@@ -130,6 +132,10 @@ import abcjs from "abcjs";
 import "abcjs/abcjs-audio.css";
 import { sleep } from "~/utils/sleep.js";
 
+const sum = (arr) => {
+  return arr.reduce((a, b) => a + b);
+};
+
 export default {
   props: {
     abc: {
@@ -148,10 +154,10 @@ export default {
   data() {
     return {
       activated: false,
-      duration: 0,
-      durationIncrements: [1, 1, 2, 3, 4, 5],
+      durationIncrementsUnlocked: [],
       durationIncrementsRemaining: [1, 1, 2, 3, 4, 5],
       finished: false,
+      fullDuration: null,
       guess: "",
       guesses: [],
       hard: false,
@@ -165,15 +171,18 @@ export default {
     durationFactor() {
       return this.hard ? 0.65 : 1.3;
     },
-    fullDuration() {
-      return this.durationIncrements.reduce((a, b) => a + b);
+    duration() {
+      return sum(this.durationIncrementsUnlocked);
     },
     skipButtonText() {
       let text = "Skip";
 
       if (this.durationIncrementsRemaining.length) {
         const sec = this.durationIncrementsRemaining[0];
-        text += ` (+${sec}s)`;
+
+        if (sec > 0) {
+          text += ` (+${sec}s)`;
+        }
       }
 
       return text;
@@ -181,7 +190,6 @@ export default {
   },
   watch: {
     finished() {
-      this.duration = null;
       abcjs.renderAbc(this.$refs.notation, this.abc, { responsive: "resize" });
       this.activateAndPlay();
     },
@@ -192,7 +200,9 @@ export default {
     },
   },
   created() {
-    this.duration = this.durationIncrementsRemaining.shift();
+    this.durationIncrementsRemaining.push(0);
+    this.fullDuration = sum(this.durationIncrementsRemaining);
+    this.unlockNextDurationIncrement();
   },
   mounted() {
     this.synth = new abcjs.synth.CreateSynth();
@@ -208,9 +218,14 @@ export default {
     });
   },
   methods: {
+    unlockNextDurationIncrement() {
+      this.durationIncrementsUnlocked.push(
+        this.durationIncrementsRemaining.shift()
+      );
+    },
     skip() {
       this.guesses = [...this.guesses, "Skipped"];
-      this.duration += this.durationIncrementsRemaining.shift();
+      this.unlockNextDurationIncrement();
     },
     makeGuess() {
       const correct = this.guess.toLowerCase() === this.title.toLowerCase();
@@ -222,7 +237,7 @@ export default {
       this.finished = correct;
 
       if (!correct) {
-        this.duration += this.durationIncrementsRemaining.shift();
+        this.unlockNextDurationIncrement();
       }
     },
     activateAndPlay() {
