@@ -154,8 +154,8 @@ export default {
   data() {
     return {
       activated: false,
-      durationIncrementsUnlocked: [],
       durationIncrementsRemaining: [1, 1, 2, 3, 4, 5],
+      durationIncrementsUnlocked: [],
       finished: false,
       fullDuration: null,
       guess: "",
@@ -168,11 +168,11 @@ export default {
     };
   },
   computed: {
-    durationFactor() {
-      return this.hard ? 0.65 : 1.3;
-    },
     duration() {
       return sum(this.durationIncrementsUnlocked);
+    },
+    durationFactor() {
+      return this.hard ? 0.65 : 1.3;
     },
     skipButtonText() {
       let text = "Skip";
@@ -218,28 +218,6 @@ export default {
     });
   },
   methods: {
-    unlockNextDurationIncrement() {
-      this.durationIncrementsUnlocked.push(
-        this.durationIncrementsRemaining.shift()
-      );
-    },
-    skip() {
-      this.guesses = [...this.guesses, "Skipped"];
-      this.unlockNextDurationIncrement();
-    },
-    makeGuess() {
-      const correct = this.guess.toLowerCase() === this.title.toLowerCase();
-
-      this.guesses = [...this.guesses, this.guess];
-
-      this.guess = null;
-
-      this.finished = correct;
-
-      if (!correct) {
-        this.unlockNextDurationIncrement();
-      }
-    },
     activateAndPlay() {
       const play = () => {
         this.synthController.setTune(this.visualObj, true).then(() => {
@@ -276,6 +254,28 @@ export default {
       } else {
         console.log("Audio is not supported on this browser");
       }
+    },
+    makeGuess() {
+      const correct = this.guess.toLowerCase() === this.title.toLowerCase();
+
+      this.guesses = [...this.guesses, this.guess];
+
+      this.guess = null;
+
+      this.finished = correct;
+
+      if (!correct) {
+        this.unlockNextDurationIncrement();
+      }
+    },
+    skip() {
+      this.guesses = [...this.guesses, "Skipped"];
+      this.unlockNextDurationIncrement();
+    },
+    unlockNextDurationIncrement() {
+      this.durationIncrementsUnlocked.push(
+        this.durationIncrementsRemaining.shift()
+      );
     },
   },
 };
