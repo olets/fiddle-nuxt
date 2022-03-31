@@ -18,6 +18,11 @@ Start the development server on http://localhost:3000
 yarn dev
 ```
 
+## Data
+
+1. Download `tunes.json` and `tune_popularity.json` from https://github.com/adactio/TheSession-data
+1. Run `pnpm data`
+
 ## Production
 
 Build the application for production:

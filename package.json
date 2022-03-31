@@ -4,7 +4,8 @@
     "dev": "nuxi dev",
     "build": "nuxi build",
     "start": "node .output/server/index.mjs",
-    "lint": "eslint --ext .ts,.js,.vue . --fix"
+    "lint": "eslint --ext .ts,.js,.vue . --fix",
+    "data": "node ./bin/select-tunes.js"
   },
   "devDependencies": {
     "abcjs": "^6.0.2",
