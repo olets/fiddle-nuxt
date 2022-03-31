@@ -139,6 +139,7 @@
             <button
               :disabled="playing || finished"
               class="bg-slate-500 disabled:cursor-not-allowed font-bold px-4 py-2 text-sm text-white tracking-widest transition-opacity"
+              type="button"
               @click="skip"
             >
               <span class="uppercase">Skip</span> {{ skipButtonText }}
