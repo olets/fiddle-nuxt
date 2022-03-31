@@ -142,7 +142,7 @@
               type="button"
               @click="skip"
             >
-              <span class="uppercase">Skip</span> {{ skipButtonText }}
+              <span class="uppercase">Skip</span> {{ skipDetails }}
             </button>
 
             <!-- Guess button -->
@@ -209,18 +209,21 @@ export default {
         .concat(this.durationIncrementsRemaining)
         .filter((el) => el);
     },
-    skipButtonText() {
-      let text = "";
+    skipDetails() {
+      let details = "";
 
       if (this.durationIncrementsRemaining.length) {
-        const sec = this.durationIncrementsRemaining[0];
+        const increments = this.durationIncrementsRemaining[0];
 
-        if (sec > 0) {
-          text += ` (+${sec}s)`;
+        if (increments > 0) {
+          const measures = this.hard ? increments / 2 : increments
+          const measuresRounded = Math.round(measures / 0.5) * 0.5;
+
+          details += ` (+ approx. ${measuresRounded} ${measuresRounded > 1 ? "measures" : "measure"})`;
         }
       }
 
-      return text;
+      return details;
     },
   },
   watch: {
