@@ -43,7 +43,7 @@
           <!-- Unlocked duration -->
           <div
             class="left-0 h-full absolute bg-slate-900"
-            :style="`width: calc(100% * ${duration} / ${fullDuration})`"
+            :style="`width: calc(100% * ${unlockedDuration} / ${fullDuration})`"
           />
 
           <!-- Play progress -->
@@ -198,7 +198,7 @@ export default {
     };
   },
   computed: {
-    duration() {
+    unlockedDuration() {
       return sum(this.durationIncrementsUnlocked);
     },
     durationFactor() {
@@ -259,9 +259,9 @@ export default {
           this.synthController.play();
           this.playing = true;
 
-          if (this.duration) {
+          if (this.unlockedDuration) {
             // duration is in seconds, sleep needs milliseconds
-            sleep(this.duration * this.durationFactor * 1000).then(() => {
+            sleep(this.unlockedDuration * this.durationFactor * 1000).then(() => {
               this.synthController.pause();
               this.synthController.setProgress();
               this.playing = false;
